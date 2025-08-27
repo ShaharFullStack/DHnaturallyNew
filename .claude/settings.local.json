@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(unzip:*)",
+      "Bash(python3:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(npm run check:*)",
+      "Bash(pkill:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

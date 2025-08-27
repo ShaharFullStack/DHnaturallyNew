@@ -291,6 +291,7 @@ export function About() {
         </div>
       </div>
 
+
       {/* Values Section */}
       {/* <div className="dh-gradient-bg py-20" data-testid="values-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

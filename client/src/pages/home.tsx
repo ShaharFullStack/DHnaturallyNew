@@ -2,6 +2,7 @@ import { Link } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/product-card';
+import { TrustSignalsCarousel } from '@/components/trust-signals-carousel';
 import { useLanguage } from '@/contexts/language-context';
 import { t } from '@/lib/i18n';
 import { type Product } from '@shared/schema';
@@ -85,42 +86,44 @@ export function Home() {
 
   return (
     <div data-testid="home-page">
-      {/* Enhanced Hero Section */}
-      <section className="hero-bg py-44" data-testid="hero-section">
+      {/* Clean Hero Section */}
+      <section className="hero-bg py-20 lg:py-32" data-testid="hero-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-center lg:text-right">
-              <h1 className="text-4xl lg:text-6xl font-bold text-dh-navy mb-6 leading-tight" data-testid="hero-title">
-                <span className="block">{t('home.hero.title', language)}</span>
-                <span className="block text-dh-light text-3xl lg:text-4xl">
-                  {t('home.hero.subtitle', language)}
-                </span>
-              </h1>
-              <p className="text-xl text-dh-pale text-right mb-6 leading-relaxed" data-testid="hero-description">
-                {t('home.hero.description', language)}
-              </p>
+          <div className="text-center mb-16">
+            <h1 className="text-4xl lg:text-6xl font-bold text-dh-navy mb-6 leading-tight" data-testid="hero-title">
+              <span className="block">{t('home.hero.title', language)}</span>
+              <span className="block text-dh-light text-3xl lg:text-4xl mt-2">
+                {t('home.hero.subtitle', language)}
+              </span>
+            </h1>
+            <p className="text-xl text-dh-pale mb-8 leading-relaxed max-w-3xl mx-auto" data-testid="hero-description">
+              {t('home.hero.description', language)}
+            </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-end">
-                <Link href="/store">
-                  <Button 
-                    className="bg-dh-ocean text-white px-8 py-4 rounded-full font-semibold hover:bg-dh-navy transition-colors shadow-lg"
-                    data-testid="hero-cta-products"
-                  >
-                    {t('home.hero.cta.products', language)}
-                  </Button>
-                </Link>
-                <Link href="/contact">
-                  <Button 
-                    variant="outline"
-                    className="border-2 bg-dh-navy border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-dh-ocean transition-colors"
-                    data-testid="hero-cta-consultation"
-                  >
-                    {language === 'he' ? 'ייעוץ מקצועי חינם' : 'Free Professional Consultation'}
-                  </Button>
-                </Link>
-              </div>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Link href="/store">
+                <Button 
+                  size="xl"
+                  className="bg-dh-ocean text-white px-8 py-4 rounded-full font-semibold hover:bg-dh-navy transition-colors shadow-lg"
+                  data-testid="hero-cta-products"
+                >
+                  {t('home.hero.cta.products', language)}
+                </Button>
+              </Link>
+              <Link href="/contact">
+                <Button 
+                  variant="outline"
+                  size="xl"
+                  className="border-2 bg-dh-navy border-white text-white px-8 py-4 rounded-full font-semibold hover:bg-white hover:text-dh-ocean transition-colors"
+                  data-testid="hero-cta-consultation"
+                >
+                  {language === 'he' ? 'ייעוץ מקצועי חינם' : 'Free Professional Consultation'}
+                </Button>
+              </Link>
             </div>
           </div>
+
+
         </div>
       </section>
 

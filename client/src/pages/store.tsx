@@ -14,13 +14,13 @@ import { Search, Filter, Star, Award, ShieldCheck, Clock, Users, BookOpen, Messa
 export function Store() {
   const { language } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('name');
+  const [sortBy, setSortBy] = useState<string>('featured');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const [productsToShow, setProductsToShow] = useState<number>(12);
 
   const { data: products = [], isLoading } = useQuery<Product[]>({
-    queryKey: selectedCategory === 'all' ? ['/api/products'] : ['/api/products', { category: selectedCategory }],
+    queryKey: ['/api/products'],
   });
 
   const categories = [
@@ -42,9 +42,12 @@ export function Store() {
   ];
 
   const sortOptions = [
+    { value: 'featured', label: t('store.sort.recommended', language), icon: Star },
+    { value: 'popular', label: t('store.sort.popular', language), icon: Users },
+    { value: 'newest', label: t('store.sort.newest', language), icon: Clock },
     { value: 'price-asc', label: t('store.sort.price.asc', language), icon: null },
     { value: 'price-desc', label: t('store.sort.price.desc', language), icon: null },
-    { value: 'name', label: language === 'he' ? 'שם המוצר' : 'Product Name', icon: null },
+    { value: 'name', label: language === 'he' ? 'שם המוצר א-ת' : 'Name A-Z', icon: null },
   ];
 
   // Filter and search products
@@ -72,22 +75,66 @@ export function Store() {
     // Apply sorting
     filtered.sort((a, b) => {
       switch (sortBy) {
-        case 'price-asc':
-          return parseFloat(a.price) - parseFloat(b.price);
-        case 'price-desc':
-          return parseFloat(b.price) - parseFloat(a.price);
-        case 'name':
-          const nameA = language === 'he' ? a.name_he : a.name_en;
-          const nameB = language === 'he' ? b.name_he : b.name_en;
-          return nameA.localeCompare(nameB);
-        default:
-          // Default: featured items first, then by name
+        case 'featured':
+          // Featured items first, then in-stock items, then by creation date (newest first)
           if (a.featured !== b.featured) {
             return b.featured ? 1 : -1;
           }
-          const defaultNameA = language === 'he' ? a.name_he : a.name_en;
-          const defaultNameB = language === 'he' ? b.name_he : b.name_en;
-          return defaultNameA.localeCompare(defaultNameB);
+          if (a.in_stock !== b.in_stock) {
+            return b.in_stock ? 1 : -1;
+          }
+          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+          
+        case 'popular':
+          // Simulate popularity: featured items + in-stock items + newer items
+          // In a real app, this would use actual sales/view data
+          const popularityScoreA = (a.featured ? 100 : 0) + (a.in_stock ? 50 : 0) + 
+            (new Date(a.created_at || 0).getTime() / 1000000);
+          const popularityScoreB = (b.featured ? 100 : 0) + (b.in_stock ? 50 : 0) + 
+            (new Date(b.created_at || 0).getTime() / 1000000);
+          return popularityScoreB - popularityScoreA;
+          
+        case 'newest':
+          // Sort by creation date (newest first), then by stock status
+          const dateComparison = new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+          if (dateComparison !== 0) return dateComparison;
+          return b.in_stock ? 1 : -1;
+          
+        case 'price-asc':
+          // In-stock items first, then by price ascending
+          if (a.in_stock !== b.in_stock) {
+            return b.in_stock ? 1 : -1;
+          }
+          return parseFloat(a.price) - parseFloat(b.price);
+          
+        case 'price-desc':
+          // In-stock items first, then by price descending
+          if (a.in_stock !== b.in_stock) {
+            return b.in_stock ? 1 : -1;
+          }
+          return parseFloat(b.price) - parseFloat(a.price);
+          
+        case 'name':
+          // In-stock items first, then alphabetically
+          if (a.in_stock !== b.in_stock) {
+            return b.in_stock ? 1 : -1;
+          }
+          const nameA = language === 'he' ? a.name_he : a.name_en;
+          const nameB = language === 'he' ? b.name_he : b.name_en;
+          return nameA.localeCompare(nameB, language === 'he' ? 'he' : 'en', { 
+            sensitivity: 'base',
+            numeric: true 
+          });
+          
+        default:
+          // Fallback to featured sorting
+          if (a.featured !== b.featured) {
+            return b.featured ? 1 : -1;
+          }
+          if (a.in_stock !== b.in_stock) {
+            return b.in_stock ? 1 : -1;
+          }
+          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
       }
     });
 
@@ -121,136 +168,79 @@ export function Store() {
 
   return (
     <div data-testid="store-page">
-      {/* Hero Section with Trust Signals */}
-      <section className="bg-gradient-to-br from-dh-light via-white to-dh-light py-16">
+      {/* Simplified Header */}
+      <section className="bg-white py-12 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12" data-testid="store-header">
-            <h1 className="text-4xl lg:text-6xl font-bold text-dh-navy mb-6 leading-tight" data-testid="store-title">
+          <div className="text-center mb-8" data-testid="store-header">
+            <h1 className="text-3xl lg:text-4xl font-bold text-dh-navy mb-4" data-testid="store-title">
               {t('store.title', language)}
             </h1>
-            <p className="text-xl text-gray-700 max-w-4xl mx-auto mb-8 leading-relaxed" data-testid="store-description">
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto" data-testid="store-description">
               {t('store.description', language)}
             </p>
-            
-            {/* Trust Signals */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
-              {trustSignals.map((signal, index) => {
-                const IconComponent = signal.icon;
-                return (
-                  <div key={index} className="flex flex-col items-center p-4 bg-white/70 rounded-xl backdrop-blur-sm border border-dh-ocean/10">
-                    <IconComponent className="w-8 h-8 text-dh-ocean mb-3" />
-                    <h4 className="font-semibold text-dh-navy text-sm mb-1">{signal.label}</h4>
-                    <p className="text-xs text-gray-600 text-center">{signal.description}</p>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Professional Consultation CTA */}
-            <div className="mt-12 p-6 bg-dh-ocean/5 border border-dh-ocean/20 rounded-2xl">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="text-center md:text-left">
-                  <h3 className="text-lg font-semibold text-dh-navy mb-2">
-                    {language === 'he' ? 'זקוקים לייעוץ מקצועי?' : 'Need Professional Guidance?'}
-                  </h3>
-                  <p className="text-gray-600">
-                    {language === 'he' ? 'צוות המומחים שלנו כאן לעזור לכם לבחור את התכשיר המתאים' : 'Our expert team is here to help you choose the right remedy'}
-                  </p>
-                </div>
-                <Button className="bg-dh-ocean text-white px-6 py-3 rounded-full hover:bg-dh-navy transition-colors whitespace-nowrap">
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  {t('cta.getConsultation', language)}
-                </Button>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Enhanced Filter and Search Section */}
-      <section className="py-12 bg-white">
+      {/* Filter and Search Section */}
+      <section className="py-8 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Search Bar */}
-          <div className="mb-8">
-            <div className="relative max-w-2xl mx-auto">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
-                type="text"
-                placeholder={language === 'he' ? 'חפשו תכשירים טבעיים, הומיאופתיה, תסמינים...' : 'Search natural remedies, homeopathy, symptoms...'}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 pr-4 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-dh-ocean focus:ring-0 transition-colors"
-                data-testid="search-input"
-              />
+          <div className="flex flex-col lg:flex-row gap-6 mb-6">
+            {/* Search Bar */}
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Input
+                  type="text"
+                  placeholder={language === 'he' ? 'חפשו תכשירים טבעיים...' : 'Search natural remedies...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:border-dh-ocean focus:ring-0"
+                  data-testid="search-input"
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Filter Bar */}
-          <div className="bg-gradient-to-r from-white to-gray-50 p-6 rounded-2xl shadow-lg border border-gray-100 mb-8" data-testid="filter-bar">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Filter className="w-5 h-5 text-dh-ocean" />
-                  <label className="text-gray-700 font-semibold" data-testid="category-filter-label">
-                    {t('store.filter.category', language)}
-                  </label>
-                </div>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-[280px] h-12 border-2 border-gray-200 rounded-xl" data-testid="category-filter">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[400px]">
-                    {categories.map((category) => {
-                      const IconComponent = category.icon;
-                      return (
-                        <SelectItem key={category.value} value={category.value} className="p-3">
-                          <div className="flex items-center gap-3">
-                            <IconComponent className="w-4 h-4 text-dh-ocean" />
-                            <div>
-                              <div className="font-medium">{category.label}</div>
-                              <div className="text-xs text-gray-500">{category.description}</div>
-                            </div>
-                          </div>
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              </div>
+            {/* Filters */}
+            <div className="flex gap-4">
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-[240px]" data-testid="category-filter">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.value} value={category.value}>
+                      {category.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               
-              <div className="flex items-center gap-4">
-                <label className="text-gray-700 font-semibold" data-testid="sort-filter-label">
-                  {t('store.sort', language)}
-                </label>
-                <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[220px] h-12 border-2 border-gray-200 rounded-xl" data-testid="sort-filter">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {sortOptions.map((option: any) => {
-                      const IconComponent = option.icon;
-                      return (
-                        <SelectItem key={option.value} value={option.value} className="p-3">
-                          <div className="flex items-center gap-2">
-                            {IconComponent && <IconComponent className="w-4 h-4 text-dh-ocean" />}
-                            {option.label}
-                          </div>
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[180px]" data-testid="sort-filter">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {sortOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      <div className="flex items-center gap-2">
+                        {option.icon && <option.icon className="w-4 h-4 text-gray-500" />}
+                        <span>{option.label}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           {/* Results Summary */}
           {searchQuery && (
-            <div className="mb-6 p-4 bg-dh-ocean/5 rounded-xl border border-dh-ocean/20">
-              <p className="text-dh-navy font-medium">
+            <div className="mb-6 p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-blue-800 text-sm">
                 {language === 'he' 
-                  ? `נמצאו ${filteredAndSortedProducts.length} תכשירים טבעיים עבור "${searchQuery}"`
-                  : `Found ${filteredAndSortedProducts.length} natural remedies for "${searchQuery}"`
+                  ? `${filteredAndSortedProducts.length} תוצאות עבור "${searchQuery}"`
+                  : `${filteredAndSortedProducts.length} results for "${searchQuery}"`
                 }
               </p>
             </div>
@@ -261,30 +251,6 @@ export function Store() {
       {/* Products Section */}
       <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Educational Content Banner */}
-          <div className="bg-gradient-to-r from-dh-navy to-dh-ocean p-8 rounded-2xl mb-12 text-white">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="text-center md:text-left">
-                <h3 className="text-2xl font-bold mb-3">
-                  {language === 'he' ? 'למדו על הרפואה הטבעית' : 'Learn About Natural Medicine'}
-                </h3>
-                <p className="text-white/90 mb-4">
-                  {language === 'he' 
-                    ? 'מאמרים מקצועיים, מדריכים מעמיקים ומידע מבוסס מחקר על תכשירים הומיאופתיים'
-                    : 'Professional articles, in-depth guides and research-based information on homeopathic remedies'
-                  }
-                </p>
-              </div>
-              <Button 
-                variant="secondary" 
-                className="bg-white text-dh-navy px-6 py-3 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap"
-              >
-                <BookOpen className="w-4 h-4 mr-2" />
-                {language === 'he' ? 'קראו מאמרים' : 'Read Articles'}
-              </Button>
-            </div>
-          </div>
-
           {/* Products Grid */}
           {isLoading ? (
             <div className="text-center py-16">
@@ -316,7 +282,7 @@ export function Store() {
             </div>
           ) : (
             <>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12" data-testid="products-grid">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 xl:gap-8 mb-12" data-testid="products-grid">
                 {displayedProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -336,81 +302,6 @@ export function Store() {
               )}
             </>
           )}
-        </div>
-      </section>
-
-      {/* Professional Guarantee Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-dh-navy mb-6">
-                {language === 'he' ? 'מחוייבות לבריאות' : 'Committed to Your Health'}
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">
-                      {language === 'he' ? 'יעילות מוכחת קלינית' : 'Clinically Proven Efficacy'}
-                    </h4>
-                    <p className="text-gray-600">
-                      {language === 'he' 
-                        ? 'כל התכשירים שלנו מבוססים על מחקרים מדעיים ושנים של ניסיון קליני'
-                        : 'All our remedies are based on scientific research and years of clinical experience'
-                      }
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">
-                      {language === 'he' ? 'ללא תופעות לוואי' : 'No Side Effects'}
-                    </h4>
-                    <p className="text-gray-600">
-                      {language === 'he' 
-                        ? 'הטיפול ההומיאופתי עובד בהרמוניה עם הגוף ללא תופעות לוואי'
-                        : 'Homeopathic treatment works in harmony with the body without side effects'
-                      }
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-green-500 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-1">
-                      {language === 'he' ? 'ליווי מקצועי אישי' : 'Personal Professional Support'}
-                    </h4>
-                    <p className="text-gray-600">
-                      {language === 'he' 
-                        ? 'צוות המומחים שלנו זמין לייעוץ ותמיכה לאורך כל הדרך'
-                        : 'Our expert team is available for consultation and support throughout your journey'
-                      }
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-dh-light to-white p-8 rounded-2xl border border-dh-ocean/20">
-              <div className="text-center">
-                <Award className="w-16 h-16 text-dh-ocean mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-dh-navy mb-4">
-                  {t('marketing.guarantee', language)}
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  {language === 'he' 
-                    ? 'אם לא תהיו מרוצים מלא מהתוצאות תוך 30 יום - נחזיר לכם את הכסף במלואו'
-                    : 'If you\'re not completely satisfied with the results within 30 days - we\'ll refund your money in full'
-                  }
-                </p>
-                <Button className="bg-dh-ocean text-white px-8 py-3 rounded-full hover:bg-dh-navy transition-colors">
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  {language === 'he' ? 'דברו עם מומחה' : 'Speak with an Expert'}
-                </Button>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
     </div>

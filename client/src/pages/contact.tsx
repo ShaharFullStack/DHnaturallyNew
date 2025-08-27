@@ -185,7 +185,7 @@ export function Contact() {
                         <FormControl>
                           <Input
                             type="tel"
-                            placeholder="058-657-2451"
+                            placeholder="05..."
                             {...field}
                             data-testid="phone-input"
                           />

@@ -38,7 +38,7 @@ export function Navigation() {
 
   return (
     <>
-      <nav className="bg-white/95 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gray-100">
+      <nav className="bg-dh-pale/60 backdrop-blur-sm shadow-lg sticky top-0 z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-2 xl:py-0">
             {/* Logo */}
@@ -50,7 +50,7 @@ export function Navigation() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden xl:flex items-center space-x-8 rtl:space-x-reverse">
+            <div className="hidden xl:flex items-center space-x-4 rtl:space-x-reverse">
               {navItems.map((item) => (
                 <Link
                   key={item.path}
@@ -161,7 +161,7 @@ export function Navigation() {
                     href={item.path}
                     data-testid={`${item.testId}-mobile`}
                     className={`
-                      block px-6 py-4 rounded-xl text-base xl:text-lg font-medium
+                       px-6 py-4 rounded-xl text-base xl:text-lg font-medium
                       min-h-[48px] flex items-center
                       transition-all duration-200
                       hover:bg-dh-sage/20 active:scale-95

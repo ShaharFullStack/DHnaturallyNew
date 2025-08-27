@@ -2,7 +2,7 @@ import { Link } from 'wouter';
 import { Facebook, Instagram, MessageCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/language-context';
 import { t } from '@/lib/i18n';
-import logoImage from '@assets/android-chrome-512x512_1756223879006.png';
+import logoImage from '@assets/logo3d.png';
 
 export function Footer() {
   const { language } = useLanguage();
@@ -17,11 +17,11 @@ export function Footer() {
   ];
 
   const categories = [
-    { label: t('store.filter.immunity', language) },
-    { label: t('store.filter.digestion', language) },
-    { label: t('store.filter.stress', language) },
-    { label: t('store.filter.sleep', language) },
-    { label: language === 'he' ? 'ניקוי רעלים' : 'Detox' },
+    { value: 'immunity', label: t('store.filter.immunity', language) },
+    { value: 'digestion', label: t('store.filter.digestion', language) },
+    { value: 'stress', label: t('store.filter.stress', language) },
+    { value: 'sleep', label: t('store.filter.sleep', language) },
+    { value: 'detox', label: t('store.filter.detox', language) },
   ];
 
   return (
@@ -32,8 +32,8 @@ export function Footer() {
           <div data-testid="footer-company-info">
             <Link href="/">
               <div className="flex items-center space-x-3 rtl:space-x-reverse mb-6">
-                <div className="w-10 h-10 bg-dh-light rounded-full flex items-center justify-center overflow-hidden">
-                  <img src={logoImage} alt="DHnaturally Logo" className="w-8 h-8 object-contain" />
+                <div className="w-20 h-20 bg-dh-pale rounded-full flex items-center justify-center overflow-hidden">
+                  <img src={logoImage} alt="DHnaturally Logo" className="w-16 h-16 object-contain" />
                 </div>
                 <span className="text-xl font-bold">DHnaturally</span>
               </div>
@@ -96,13 +96,19 @@ export function Footer() {
             <ul className="space-y-3">
               {categories.map((category, index) => (
                 <li key={index}>
-                  <a
-                    href="#"
+                  <Link
+                    href={`/store?category=${category.value}#products-grid`}
                     className="text-gray-300 hover:text-dh-light transition-colors"
                     data-testid={`footer-category-${index}`}
+                    onClick={() => {
+                      // Trigger custom event to notify store page of navigation
+                      setTimeout(() => {
+                        window.dispatchEvent(new CustomEvent('storePageUpdate'));
+                      }, 100);
+                    }}
                   >
                     {category.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -142,27 +148,27 @@ export function Footer() {
              {year} {t('footer.rights', language)} 
             </p>
             <div className="flex space-x-6 rtl:space-x-reverse text-sm">
-              <a
-                href="#"
+              <Link
+                href="/"
                 className="text-gray-400 hover:text-dh-light transition-colors"
                 data-testid="footer-privacy"
               >
                 {t('footer.privacy', language)}
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/"
                 className="text-gray-400 hover:text-dh-light transition-colors"
                 data-testid="footer-terms"
               >
                 {t('footer.terms', language)}
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/"
                 className="text-gray-400 hover:text-dh-light transition-colors"
                 data-testid="footer-shipping"
               >
                 {t('footer.shipping', language)}
-              </a>
+              </Link>
             </div>
           </div>
         </div>

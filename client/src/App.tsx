@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/contexts/language-context";
 import { Navigation } from "@/components/navigation";
 import { WhatsAppButton } from "@/components/whatsapp-button";
 import { Footer } from "@/components/footer";
+import { ScrollToTop } from "@/components/scroll-to-top";
 import { Home } from "@/pages/home";
 import { Store } from "@/pages/store";
 import { Articles } from "@/pages/articles";
@@ -16,14 +17,17 @@ import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/store" component={Store} />
-      <Route path="/articles" component={Articles} />
-      <Route path="/about" component={About} />
-      <Route path="/contact" component={Contact} />
-      <Route component={NotFound} />
-    </Switch>
+    <>
+      <ScrollToTop />
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/store" component={Store} />
+        <Route path="/articles" component={Articles} />
+        <Route path="/about" component={About} />
+        <Route path="/contact" component={Contact} />
+        <Route component={NotFound} />
+      </Switch>
+    </>
   );
 }
 

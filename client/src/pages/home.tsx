@@ -88,7 +88,7 @@ export function Home() {
   return (
     <div data-testid="home-page">
       {/* Clean Hero Section */}
-      <section className="hero-bg py-20 lg:py-32" data-testid="hero-section">
+      <section className="hero-bg py-24 lg:py-20" data-testid="hero-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-right mb-6">
             <div className="flex justify-center mb-2">
@@ -98,13 +98,13 @@ export function Home() {
               />
             </div>
             
-            <h1 className="text-4xl lg:text-6xl font-bold text-dh-navy mb-6 leading-tight" data-testid="hero-title">
-              <span className="block text-dh-navy text-3xl lg:text-4xl mt-2">
-                {t('home.hero.subtitle', language)}
+            <h1 className=" font-bold text-dh-navy mb-5 leading-tight" data-testid="hero-title">
+              <span className="block text-dh-pale text-xl lg:text-6xl mt-2">
+                {t('home.hero.title', language)}
               </span>
             </h1>
-            <p className="text-xl text-dh-pale mb-8 leading-relaxed max-w-3xl mx-auto" data-testid="hero-description">
-              {t('home.hero.description', language)}
+            <p className="text-4xl text-dh-navy text-shadow-md font-semibold text-center mb-2 leading-relaxed" data-testid="hero-description">
+              {t('home.hero.subtitle', language)}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -137,7 +137,7 @@ export function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-dh-navy mb-6">
-              {language === 'he' ? 'למה DHnaturally נחשב לרשות המובילה בטיפול טבעי?' : 'Why DHnaturally is Considered the Leading Authority in Natural Treatment?'}
+              {language === 'he' ? ' DHnaturally מובילה בטיפול טבעי' : 'Why DHnaturally is Considered the Leading Authority in Natural Treatment?'}
             </h2>
             <p className="text-xl text-gray-600 max-w-4xl mx-auto">
               {language === 'he' 

@@ -11,7 +11,7 @@ export function AnimatedLogo({
   className, 
   blendMode = 'screen' 
 }: AnimatedLogoProps) {
-  const videoSrc = variant === 'header' ? '/assets/animatedLogo2.mp4' : '/assets/animatedLogo.mp4';
+  const videoSrc = variant === 'header' ? '/assets/animatedLogo2.mp4' : '/assets/animatedLogo5.mp4';
   const size = variant === 'header' ? 'w-12 h-12' : 'w-24 h-24 lg:w-60 lg:h-60';
   
   // Enhanced blend classes based on variant
@@ -21,7 +21,7 @@ export function AnimatedLogo({
     <video 
       src={videoSrc}
       autoPlay 
-      loop 
+      loop={false} 
       muted 
       playsInline
       className={cn(size, 'rounded-lg', blendClass, className)}

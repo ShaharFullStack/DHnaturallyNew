@@ -45,7 +45,7 @@ export function Navigation() {
             <Link href="/" data-testid="logo-link">
               <div className="flex items-center rtl:space-between">
                   <img src={logoImage} alt="DHnaturally Logo" className="logo-image" />
-                <span className="text-xl xl:text-2xl font-bold text-dh-ocean">DHnaturally</span>
+                <span className="text-lg xl:text-xl header-title font-bold text-dh-ocean">DHnaturally</span>
               </div>
             </Link>
 

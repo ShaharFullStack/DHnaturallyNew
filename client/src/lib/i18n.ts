@@ -17,7 +17,7 @@ export const translations: Translations = {
 
   // Home page
   'home.hero.title': { he: 'DHnaturally', en: 'DHnaturally' },
-  'home.hero.subtitle': { he: 'מרכז הטיפול הטבעי המקצועי שלך', en: 'Your Professional Natural Wellness Center' },
+  'home.hero.subtitle': { he: 'תמצית בריאות מהטבע', en: 'Healing naturally, living fully.' },
   'home.hero.description': { he: 'תכשירים הומיאופתיים איכותיים ופתרונות טבעיים מבוססי מחקר להחזרת הגוף למצב האיזון הטבעי ובריאות מיטבית. התמחות בטיפול הוליסטי ורפואה משלימה', en: 'Research-based quality homeopathic remedies and natural solutions to restore your body\'s natural balance and optimal wellness. Specializing in holistic treatment and integrative medicine' },
   'home.hero.cta.products': { he: 'רכישת תכשירים טבעיים', en: 'Shop Natural Remedies' },
   'home.hero.cta.about': { he: 'למד על טיפול טבעי', en: 'Learn Natural Healing' },

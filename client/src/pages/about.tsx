@@ -1,6 +1,7 @@
 import { useLanguage } from '@/contexts/language-context';
 import { t } from '@/lib/i18n';
 import { Shield, RotateCcw, Scale, Droplet, Fan, Heart, Lock, Award, GraduationCap, FileText } from 'lucide-react';
+import { CertificationsCarousel } from '@/components/certifications-carousel';
 import logoImage from '../../assets/logo3d.png';
 import cert1 from '../../assets/certifications/IMG_0003.jpg';
 import cert2 from '../../assets/certifications/IMG_0004.jpg';
@@ -245,49 +246,10 @@ export function About() {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {certifications.map((certification, index) => {
-              const IconComponent = certification.icon;
-              return (
-                <div 
-                  key={index}
-                  className="bg-white rounded-xl shadow-lg overflow-hidden"
-                  data-testid={`certification-${index}`}
-                >
-                  <div className="p-8">
-                    <div className="flex items-center mb-6">
-                      <div className="w-12 h-12 bg-dh-ocean text-white rounded-full flex items-center justify-center flex-shrink-0">
-                        <IconComponent className="h-6 w-6" />
-                      </div>
-                      <div className={`ml-4 ${language === 'he' ? 'text-right' : 'text-left'}`}>
-                        <div className="text-sm text-dh-ocean font-medium mb-1">
-                          {certification.category}
-                        </div>
-                        <h3 className="text-xl font-semibold text-dh-navy">{certification.title}</h3>
-                      </div>
-                    </div>
-                    
-                    <p className="text-gray-600 leading-relaxed mb-6">
-                      {certification.description}
-                    </p>
-                    
-                    <div className="grid grid-cols-2 gap-3">
-                      {certification.images.map((image, imgIndex) => (
-                        <div key={imgIndex} className="aspect-square bg-gray-50 rounded-lg overflow-hidden">
-                          <img 
-                            src={image} 
-                            alt={`${certification.title} certificate ${imgIndex + 1}`}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform cursor-pointer"
-                            data-testid={`cert-image-${index}-${imgIndex}`}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <CertificationsCarousel 
+            certifications={certifications} 
+            language={language}
+          />
         </div>
       </div>
 
